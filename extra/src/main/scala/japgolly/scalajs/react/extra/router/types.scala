@@ -40,8 +40,13 @@ final case class BaseUrl(value: String) extends PathLike[BaseUrl] {
 }
 
 object BaseUrl {
+  def fromWindowLocation: BaseUrl = {
+    val portStr = if(dom.window.location.port == "") "" else s":${dom.window.location.port}"
+    BaseUrl(s"${dom.window.location.protocol}//${dom.window.location.hostname}$portStr")
+  }
+
   def fromWindowOrigin: BaseUrl =
-    BaseUrl(dom.window.location.origin)
+    dom.window.location.origin.map(BaseUrl(_)).getOrElse(fromWindowLocation)
 
   def fromWindowOrigin_/ : BaseUrl =
     fromWindowOrigin.endWith_/
